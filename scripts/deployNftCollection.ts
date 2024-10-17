@@ -14,18 +14,20 @@ export async function run(provider: NetworkProvider) {
 
     let whitelist: AddrList = Dictionary.empty();
         whitelist.set(Address.parse("0QAFyfwn13L8oi30vdWBV41zFaHzCa6mJpVEjCeaDUAqmGcO"), false);
+        whitelist.set(Address.parse("0QAFyfwn13L8oi30vdWBV41zFaHzCa6mJpVEjCeaDUAqmGcO"), false);
+
 
     const nftCollection = provider.open(NftCollection.createFromConfig({
         owner_address: Address.parse("0QAFyfwn13L8oi30vdWBV41zFaHzCa6mJpVEjCeaDUAqmGcO"),
-        buyer_limit_silver: 1090,
-        ton_price_silver: toNano("0.2"),
-        jetton_price_gold: toNano("0.4"),
+        buyer_limit_silver: 20,
+        ton_price_silver: toNano("1"),
+        jetton_price_gold: BigInt(5 * 10 ** 6),
         nft_item_code: await compile("NftItem"),
         whitelist: whitelist,
-        content_collection: "https://s.getgems.io/nft/c/65f1941c8d4e725b494dd4b2/edit/meta-1718748682486.json",
-        content_item: "https://s.getgems.io/nft/c/65f1941c8d4e725b494dd4b2/",
-        content_item_gold: "7/meta.json",
-        content_item_silver: "2000003/meta.json",
+        content_collection: "https://raw.githubusercontent.com/RUGPOLICE/NFT/refs/heads/main/Metadata_Collection.json",
+        content_item: "https://raw.githubusercontent.com/RUGPOLICE/NFT/refs/heads/main/",
+        content_item_gold: "Metadata_DEP_NFT.json",
+        content_item_silver: "Metadata_Gen_NFT.json",
         royalty_params_data: {
             royaltyAddress: Address.parse("0QAFyfwn13L8oi30vdWBV41zFaHzCa6mJpVEjCeaDUAqmGcO"),
             royaltyBase: 100,
@@ -42,6 +44,4 @@ export async function run(provider: NetworkProvider) {
     await nftCollection.sendDeploy(provider.sender(), toNano('0.05'), res.stack.readAddress());
 
     await provider.waitForDeploy(nftCollection.address);
-
-    // run methods on `nftCollection`
 }

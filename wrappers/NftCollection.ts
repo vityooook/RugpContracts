@@ -102,7 +102,7 @@ export class NftCollection implements Contract {
         });
     }
 
-    
+
     async sendDeployNft(provider: ContractProvider, via: Sender, 
         opts: {
             itemIndex: number, 

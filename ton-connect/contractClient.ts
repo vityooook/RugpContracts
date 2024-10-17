@@ -1,4 +1,4 @@
-import { Address, beginCell, toNano } from '@ton/ton';
+import { Address, beginCell, toNano, TonClient } from '@ton/ton';
 
 
 
@@ -10,6 +10,21 @@ export async function purchaseForTon() {
 
     const payload = Buffer.from(body.toBoc()).toString("base64");
     return { payload };
+}
+
+export async function getUserWallet (args: {
+    client: TonClient;
+    jettonMasterAddress: Address;
+    walletAddress: Address;
+}) {
+    const response = await args.client.runMethod(args.jettonMasterAddress, "get_wallet_address", [{
+        type: 'slice',
+        cell: beginCell().storeAddress(args.walletAddress).endCell()
+      }]);
+    
+    const jettonWallet = response.stack.readAddress();
+
+    return { jettonWallet }
 }
 
 
