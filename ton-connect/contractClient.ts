@@ -1,5 +1,9 @@
-import { Address, beginCell, toNano, TonClient } from '@ton/ton';
+import { Address, beginCell, toNano, TonClient, TupleBuilder } from '@ton/ton';
 
+const client = new TonClient({
+    endpoint: "https://testnet.toncenter.com/api/v2/jsonRPC",
+    apiKey: "a49cf7ff14b615806caa6494d6af3ad683ceeaeb30a6fd865a20d4eaac2b1c75" // you can get an api key from @tonapibot bot in Telegram
+});
 
 
 export async function purchaseForTon() {
@@ -12,17 +16,17 @@ export async function purchaseForTon() {
     return { payload };
 }
 
-export async function getUserWallet (args: {
+export async function getUserWallet(args: {
     client: TonClient;
     jettonMasterAddress: Address;
     walletAddress: Address;
 }) {
-    const response = await args.client.runMethod(args.jettonMasterAddress, "get_wallet_address", [{
-        type: 'slice',
-        cell: beginCell().storeAddress(args.walletAddress).endCell()
-      }]);
+    const tuple = new TupleBuilder()
+        tuple.writeAddress(args.walletAddress)
+    const response = await args.client.runMethod(args.jettonMasterAddress, "get_wallet_address", tuple.build());
     
     const jettonWallet = response.stack.readAddress();
+    console.log(jettonWallet)
 
     return { jettonWallet }
 }
@@ -49,3 +53,8 @@ export function purchaseForJetton(args: {
     return { payload };
 }
 
+getUserWallet({
+    client: client,
+    jettonMasterAddress: Address.parse("kQCmdQyNeqcrPHxyqZmw4JTrbyGzrrKLnPU5iG7oBntiwsX3"),
+    walletAddress: Address.parse("0QAFyfwn13L8oi30vdWBV41zFaHzCa6mJpVEjCeaDUAqmGcO")
+})
