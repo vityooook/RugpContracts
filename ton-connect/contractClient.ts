@@ -6,14 +6,13 @@ const client = new TonClient({
 });
 
 
-export async function purchaseForTon() {
-    var body = beginCell()
+export async function purchaseForTon() { // начни с этого 
+    var msgBody = beginCell()
         .storeUint(1, 32)
         .storeUint(0, 64)
-    .endCell()
+    .endCell().toBoc().toString("base64");
 
-    const payload = Buffer.from(body.toBoc()).toString("base64");
-    return { payload };
+    return { msgBody };
 }
 
 export async function getUserWallet(args: {
@@ -21,8 +20,8 @@ export async function getUserWallet(args: {
     jettonMasterAddress: Address;
     walletAddress: Address;
 }) {
-    const tuple = new TupleBuilder()
-        tuple.writeAddress(args.walletAddress)
+    const tuple = new TupleBuilder();
+    tuple.writeAddress(args.walletAddress);
     const response = await args.client.runMethod(args.jettonMasterAddress, "get_wallet_address", tuple.build());
     
     const jettonWallet = response.stack.readAddress();
@@ -37,7 +36,7 @@ export function purchaseForJetton(args: {
     destinationAddress: Address;
     responsAddress: Address;
 }) {
-    var body = beginCell()
+    var msgBody = beginCell()
         .storeUint(0xf8a7ea5, 32)
         .storeUint(0, 64)
         .storeCoins(args.amount)
@@ -46,11 +45,9 @@ export function purchaseForJetton(args: {
         .storeBit(0)
         .storeCoins(toNano("0.2")) // минимум для успешной транзакции
         .storeBit(0)
-    .endCell();
+    .endCell().toBoc().toString("base64");
 
-    const payload = Buffer.from(body.toBoc()).toString("base64");
-
-    return { payload };
+    return { msgBody };
 }
 
 getUserWallet({
